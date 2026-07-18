@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4-Way Junction Traffic Light</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="layout">
+  <div class="scene-wrap">
+    <svg id="scene" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+      <!-- background -->
+      <rect x="0" y="0" width="800" height="800" fill="#6b9b52" />
+
+      <!-- roads -->
+      <rect class="road" x="0" y="320" width="800" height="160" />
+      <rect class="road" x="320" y="0" width="160" height="800" />
+
+      <!-- lane divider dashes: vertical road (6 internal lane lines) -->
+      <g class="lane-lines">
+        <line class="dash" x1="340" y1="0" x2="340" y2="296" /><line class="dash" x1="340" y1="504" x2="340" y2="800" />
+        <line class="dash" x1="360" y1="0" x2="360" y2="296" /><line class="dash" x1="360" y1="504" x2="360" y2="800" />
+        <line class="dash" x1="380" y1="0" x2="380" y2="296" /><line class="dash" x1="380" y1="504" x2="380" y2="800" />
+        <line class="dash" x1="420" y1="0" x2="420" y2="296" /><line class="dash" x1="420" y1="504" x2="420" y2="800" />
+        <line class="dash" x1="440" y1="0" x2="440" y2="296" /><line class="dash" x1="440" y1="504" x2="440" y2="800" />
+        <line class="dash" x1="460" y1="0" x2="460" y2="296" /><line class="dash" x1="460" y1="504" x2="460" y2="800" />
+        <!-- median -->
+        <line class="median" x1="400" y1="0" x2="400" y2="296" /><line class="median" x1="400" y1="504" x2="400" y2="800" />
+      </g>
+
+      <!-- lane divider dashes: horizontal road (6 internal lane lines) -->
+      <g class="lane-lines">
+        <line class="dash" x1="0" y1="340" x2="296" y2="340" /><line class="dash" x1="504" y1="340" x2="800" y2="340" />
+        <line class="dash" x1="0" y1="360" x2="296" y2="360" /><line class="dash" x1="504" y1="360" x2="800" y2="360" />
+        <line class="dash" x1="0" y1="380" x2="296" y2="380" /><line class="dash" x1="504" y1="380" x2="800" y2="380" />
+        <line class="dash" x1="0" y1="420" x2="296" y2="420" /><line class="dash" x1="504" y1="420" x2="800" y2="420" />
+        <line class="dash" x1="0" y1="440" x2="296" y2="440" /><line class="dash" x1="504" y1="440" x2="800" y2="440" />
+        <line class="dash" x1="0" y1="460" x2="296" y2="460" /><line class="dash" x1="504" y1="460" x2="800" y2="460" />
+        <!-- median -->
+        <line class="median" x1="0" y1="400" x2="296" y2="400" /><line class="median" x1="504" y1="400" x2="800" y2="400" />
+      </g>
+
+      <!-- stop lines -->
+      <rect class="stopline" x="320" y="307" width="80" height="6" />
+      <rect class="stopline" x="400" y="487" width="80" height="6" />
+      <rect class="stopline" x="304" y="400" width="6" height="80" />
+      <rect class="stopline" x="490" y="320" width="6" height="80" />
+
+      <!-- crosswalks -->
+      <g class="crosswalk">
+        <rect x="330" y="296" width="10" height="24" /><rect x="350" y="296" width="10" height="24" />
+        <rect x="370" y="296" width="10" height="24" /><rect x="390" y="296" width="10" height="24" />
+        <rect x="410" y="296" width="10" height="24" /><rect x="430" y="296" width="10" height="24" />
+        <rect x="450" y="296" width="10" height="24" /><rect x="470" y="296" width="10" height="24" />
+      </g>
+      <g class="crosswalk">
+        <rect x="330" y="480" width="10" height="24" /><rect x="350" y="480" width="10" height="24" />
+        <rect x="370" y="480" width="10" height="24" /><rect x="390" y="480" width="10" height="24" />
+        <rect x="410" y="480" width="10" height="24" /><rect x="430" y="480" width="10" height="24" />
+        <rect x="450" y="480" width="10" height="24" /><rect x="470" y="480" width="10" height="24" />
+      </g>
+      <g class="crosswalk">
+        <rect x="296" y="330" width="24" height="10" /><rect x="296" y="350" width="24" height="10" />
+        <rect x="296" y="370" width="24" height="10" /><rect x="296" y="390" width="24" height="10" />
+        <rect x="296" y="410" width="24" height="10" /><rect x="296" y="430" width="24" height="10" />
+        <rect x="296" y="450" width="24" height="10" /><rect x="296" y="470" width="24" height="10" />
+      </g>
+      <g class="crosswalk">
+        <rect x="480" y="330" width="24" height="10" /><rect x="480" y="350" width="24" height="10" />
+        <rect x="480" y="370" width="24" height="10" /><rect x="480" y="390" width="24" height="10" />
+        <rect x="480" y="410" width="24" height="10" /><rect x="480" y="430" width="24" height="10" />
+        <rect x="480" y="450" width="24" height="10" /><rect x="480" y="470" width="24" height="10" />
+      </g>
+
+      <!-- cars: 3 per approach (left / straight / right), all drawn pointing east by default -->
+      <g id="car-sb-left" class="car" fill="#c0392b" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-sb-straight" class="car" fill="#2e6fd9" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-sb-right" class="car" fill="#d98a1f" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+
+      <g id="car-nb-left" class="car" fill="#7d3fa8" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-nb-straight" class="car" fill="#1f9d75" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-nb-right" class="car" fill="#c2185b" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+
+      <g id="car-eb-left" class="car" fill="#5d4037" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-eb-straight" class="car" fill="#0288d1" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-eb-right" class="car" fill="#e64a19" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+
+      <g id="car-wb-left" class="car" fill="#455a64" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-wb-straight" class="car" fill="#8e24aa" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+      <g id="car-wb-right" class="car" fill="#00897b" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+
+      <!-- one extra car demonstrating a permissive ("yielded") left turn: it
+           waits out the protected-left arrow entirely, then turns left during
+           the plain through-green phase by yielding to oncoming traffic -
+           legal at many real intersections once the arrow goes dark/red. -->
+      <g id="car-nb-left-yield" class="car" fill="#ffca28" transform="translate(-100,-100)">
+        <rect x="-13" y="-8" width="26" height="16" rx="4" /><rect x="1" y="-5" width="9" height="10" rx="2" fill="#dff1ff" />
+      </g>
+
+      <!-- traffic signals: one combined head per approach, positioned directly
+           at the approach it controls (not catty-corner) so it's obvious which
+           signal belongs to which direction. Each has a compass label with an
+           arrow showing which way that approach's traffic travels. -->
+      <text class="signal-label" x="400" y="24">NORTH &#8595;</text>
+      <g class="signal" data-approach="sb" transform="translate(400,34)">
+        <rect class="mast" x="-84" y="50" width="168" height="8" rx="2" />
+
+        <rect class="housing" x="-80" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp left red" points="-50,15 -50,33 -67,24" />
+        <polygon class="lamp left yellow" points="-50,49 -50,67 -67,58" />
+        <polygon class="lamp left green" points="-50,83 -50,101 -67,92" />
+
+        <rect class="housing" x="-27" y="0" width="54" height="112" rx="6" />
+        <circle class="lamp through red" cx="0" cy="24" r="11" />
+        <circle class="lamp through yellow" cx="0" cy="58" r="11" />
+        <circle class="lamp through green" cx="0" cy="92" r="11" />
+
+        <rect class="housing" x="36" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp right red" points="50,15 50,33 67,24" />
+        <polygon class="lamp right yellow" points="50,49 50,67 67,58" />
+        <polygon class="lamp right green" points="50,83 50,101 67,92" />
+
+        <rect class="pole" x="-4" y="112" width="8" height="50" />
+      </g>
+
+      <text class="signal-label" x="686" y="316">EAST &#8592;</text>
+      <g class="signal" data-approach="wb" transform="translate(686,340)">
+        <rect class="mast" x="-84" y="50" width="168" height="8" rx="2" />
+
+        <rect class="housing" x="-80" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp left red" points="-50,15 -50,33 -67,24" />
+        <polygon class="lamp left yellow" points="-50,49 -50,67 -67,58" />
+        <polygon class="lamp left green" points="-50,83 -50,101 -67,92" />
+
+        <rect class="housing" x="-27" y="0" width="54" height="112" rx="6" />
+        <circle class="lamp through red" cx="0" cy="24" r="11" />
+        <circle class="lamp through yellow" cx="0" cy="58" r="11" />
+        <circle class="lamp through green" cx="0" cy="92" r="11" />
+
+        <rect class="housing" x="36" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp right red" points="50,15 50,33 67,24" />
+        <polygon class="lamp right yellow" points="50,49 50,67 67,58" />
+        <polygon class="lamp right green" points="50,83 50,101 67,92" />
+
+        <rect class="pole" x="-4" y="112" width="8" height="50" />
+      </g>
+
+      <g class="signal" data-approach="nb" transform="translate(400,604)">
+        <rect class="mast" x="-84" y="50" width="168" height="8" rx="2" />
+
+        <rect class="housing" x="-80" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp left red" points="-50,15 -50,33 -67,24" />
+        <polygon class="lamp left yellow" points="-50,49 -50,67 -67,58" />
+        <polygon class="lamp left green" points="-50,83 -50,101 -67,92" />
+
+        <rect class="housing" x="-27" y="0" width="54" height="112" rx="6" />
+        <circle class="lamp through red" cx="0" cy="24" r="11" />
+        <circle class="lamp through yellow" cx="0" cy="58" r="11" />
+        <circle class="lamp through green" cx="0" cy="92" r="11" />
+
+        <rect class="housing" x="36" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp right red" points="50,15 50,33 67,24" />
+        <polygon class="lamp right yellow" points="50,49 50,67 67,58" />
+        <polygon class="lamp right green" points="50,83 50,101 67,92" />
+
+        <rect class="pole" x="-4" y="112" width="8" height="50" />
+      </g>
+      <text class="signal-label" x="400" y="786">SOUTH &#8593;</text>
+
+      <g class="signal" data-approach="eb" transform="translate(114,340)">
+        <rect class="mast" x="-84" y="50" width="168" height="8" rx="2" />
+
+        <rect class="housing" x="-80" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp left red" points="-50,15 -50,33 -67,24" />
+        <polygon class="lamp left yellow" points="-50,49 -50,67 -67,58" />
+        <polygon class="lamp left green" points="-50,83 -50,101 -67,92" />
+
+        <rect class="housing" x="-27" y="0" width="54" height="112" rx="6" />
+        <circle class="lamp through red" cx="0" cy="24" r="11" />
+        <circle class="lamp through yellow" cx="0" cy="58" r="11" />
+        <circle class="lamp through green" cx="0" cy="92" r="11" />
+
+        <rect class="housing" x="36" y="0" width="44" height="112" rx="6" />
+        <polygon class="lamp right red" points="50,15 50,33 67,24" />
+        <polygon class="lamp right yellow" points="50,49 50,67 67,58" />
+        <polygon class="lamp right green" points="50,83 50,101 67,92" />
+
+        <rect class="pole" x="-4" y="112" width="8" height="50" />
+      </g>
+      <text class="signal-label" x="114" y="316">WEST &#8594;</text>
+    </svg>
+  </div>
+
+  <aside class="panel">
+    <h1>4-Way Junction Signal Logic</h1>
+    <p class="phase" id="phase-label">&nbsp;</p>
+    <p class="phase-sub" id="phase-sub">&nbsp;</p>
+
+    <div class="controls">
+      <button id="play-pause" type="button" aria-pressed="false">Pause</button>
+      <div class="speed-group" role="group" aria-label="Playback speed">
+        <button class="speed-btn" type="button" data-speed="0.25">0.25&times;</button>
+        <button class="speed-btn active" type="button" data-speed="0.5">0.5&times;</button>
+        <button class="speed-btn" type="button" data-speed="1">1&times;</button>
+        <button class="speed-btn" type="button" data-speed="2">2&times;</button>
+      </div>
+    </div>
+
+    <h2>How the intersection works</h2>
+    <ul>
+      <li>Each approach has <strong>4 lanes</strong>: a protected left-turn lane, two straight-through lanes, and a right-turn lane.</li>
+      <li>Every lane gets its own signal: a left arrow, a through circle, and a right arrow &mdash; each cycles red &rarr; green &rarr; yellow &rarr; red independently.</li>
+      <li><strong>Protected left turns go first.</strong> Left-lane traffic gets an exclusive green arrow while every other movement on that road holds at red, so left-turners never have to cross oncoming traffic.</li>
+      <li>Once the left arrow clears, the <strong>through and right lanes get a green light together</strong> &mdash; right turns are permitted alongside straight-through traffic, the way "right on green" normally works.</li>
+      <li>The two roads alternate: North&ndash;South runs its full left-then-through sequence, then East&ndash;West runs the same sequence, then it repeats.</li>
+      <li>Watch the cars: each one <strong>brakes to a stop at the white stop line on red</strong>, waits, then pulls away only once its own lane's light turns green.</li>
+      <li>The <strong style="color:#ffca28">amber car</strong> on the south approach demonstrates a <strong>permissive (yielded) left turn</strong>: its left arrow goes red after the protected phase, but once the plain through-green comes on it's still legal to turn left there &mdash; the driver just has to yield to the oncoming through traffic first, which is why it waits noticeably longer before going.</li>
+    </ul>
+  </aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
